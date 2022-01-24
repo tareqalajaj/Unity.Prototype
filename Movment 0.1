@@ -1,0 +1,61 @@
+public class movment : MonoBehaviour
+{
+    //the speed Number
+    public float speed = 5.0f;
+    //the power fo a jump
+    public float jumpForce = 5.0f;
+    //right and leaft
+    private float horizontalInput;
+    // forward and back
+    private float forwardInput;
+    // Rigidbody of the player
+    private Rigidbody playerRb;
+    //if the player is on ground
+    public bool isOnGround = true;
+
+    private const int MaxJump = 2;
+    private int currentJump = 0;
+
+
+    private void Start()
+    {
+        playerRb = GetComponent<Rigidbody>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float forwardInput = Input.GetAxis("Vertical");
+
+        //change the Transform (V3.forward = (0 0 1) * (pro frame change it) * speed * (forwardInput = ( 1 , -1 )))
+        //                                    x y z
+
+        //Move the Player forward 
+        playerRb.AddForce(new Vector3(horizontalInput, 0f, forwardInput) * speed);
+
+       // transform.Translate(Vector3.forward * Time.deltaTime * speed * forwardInput);
+        //move the player right 
+       // transform.Translate(Vector3.right * Time.deltaTime * speed * horizontalInput);
+
+      //Jump 2 times
+        if (Input.GetKeyDown(KeyCode.Space) && (isOnGround || MaxJump > currentJump))
+        {
+            playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            isOnGround = false;
+            currentJump++;
+        }
+
+    }
+  
+     //collision with Player and Ground
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isOnGround = true;
+            currentJump = 0;
+        }
+    }
+
+}
